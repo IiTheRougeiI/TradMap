@@ -2,15 +2,12 @@ const express = require('express');
 const Joi = require("joi");
 
 const db = require('../db');
-const Sessions = db.get('Sessions');
+const Members = db.get('Members');
 
 //Defining the schema for the backend.
-const schema = Joi.object().keys({
-    event:   Joi.string().min(1).max(100).required(),
-    venue:   Joi.string().min(1).max(500).required(),
-    address: Joi.string().min(1).max(100).required(),
-    dtstart: Joi.string().required(),
-    dtend:   Joi.string().required(),
+const Users = Joi.object().keys({
+    name:   Joi.string().min(1).max(100).required(),
+    bio:   Joi.string().min(1).max(500).required(),
     latitude:    Joi.number().required(),
     longitude:   Joi.number().required()
 });
@@ -19,35 +16,32 @@ const router = express.Router();
 
 //Gets all sessions that are found within the DB.
 router.get('/', (req, res) => {
-  Sessions
+  Members
   .find()
-  .then(allSessions =>{
-      res.json(allSessions);
+  .then(allMembers =>{
+      res.json(allMembers);
     });
 });
 //POST for when no errors are produced.
-router.post('/', (req, res, next) => {
+/* router.post('/', (req, res, next) => {
   const result = Joi.validate(req.body, schema);
   if (result.error == null) {
 //Removes the need to write eg) req.body.name below.
-    const { event, venue, address, latitude, longitude, dtstart, dtend,} = req.body;
-    const Session = {
-      event,
-      venue,
-      address,
-      dtstart,
-      dtend,
+    const {name,bio, latitude, longitude,} = req.body;
+    const members = {
+      name,
+      bio,
       latitude,
       longitude,
       date: new Date()
      };
-   Sessions.insert(Session).then(insertedMessage => {
+   members.insert(members).then(insertedMessage => {
          res.json(insertedMessage);
    });
  }
 else {
   next(result.error);
    }
-});
+}); */
 
 module.exports = router;
