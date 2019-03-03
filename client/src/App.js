@@ -4,16 +4,19 @@ import L from 'leaflet';
 import Joi from 'joi';
 //import only modules needed or error.
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
-import { Card, CardTitle, CardText } from 'reactstrap';
+import { Card, CardTitle, CardText,Modal,ModalBody,ModalFooter,ModalHeader } from 'reactstrap';
 import {Form, FormGroup, Label, Input } from 'reactstrap';
+import * as ELG from 'esri-leaflet-geocoder';
 import { Button } from 'reactstrap';
 import Chart from './components/Chart';
+import Search from './components/Search';
+import PopupModal from './components/Modal';
 
 
 
 var myIcon = L.icon({
-    iconUrl: 'https://purepng.com/public/uploads/large/purepng.com-harpharpstringedsoundboardfingersmodern-1421526538276nepuu.png',
-    iconSize: [25, 51],
+    iconUrl: 'http://pngimg.com/uploads/harp/harp_PNG26.png',
+    iconSize: [20, 51],
     iconAnchor: [12.5, 51],
     popupAnchor: [0, -51],
     draggable: true,
@@ -24,7 +27,13 @@ var myIcon1 = L.icon({
     iconSize: [25, 51],
     iconAnchor: [12.5, 51],
     popupAnchor: [0, -51],
-    draggable: true,
+});
+
+var myIcon2 = L.icon({
+    iconUrl: 'https://static.thenounproject.com/png/852208-200.png',
+    iconSize: [25, 51],
+    iconAnchor: [12.5, 51],
+    popupAnchor: [0, -51],
 });
 
 //Joi creates the schema for validation
@@ -36,6 +45,7 @@ const schema = Joi.object().keys({
     dtend:   Joi.string().required()
 });
 
+//Not used unless for posting (Members but can be applied to others.)
 const schema1 = Joi.object().keys({
     name:   Joi.string().min(1).max(100).required(),
     bio:   Joi.string().min(1).max(500).required(),
@@ -45,18 +55,20 @@ const schema1 = Joi.object().keys({
 
 
 
+
 //URL declaration, if hostname is localhost, request backend. otherwise URL.
-const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api/v1/Sessions' : 'production-url-here'
-const API_URL1 = window.location.hostname === 'localhost' ? 'http://localhost:5000/api/v1/Members' : 'production-url-here'
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api/v1/Sessions' : 'https://api.tradmap.live/api/v1/Sessions';
+const API_URL1 = window.location.hostname === 'localhost' ? 'http://localhost:5000/api/v1/Members' : 'https://api.tradmap.live/api/v1/Members';
 
 class App extends Component {
   state = {
     location: {
-        lat: 51.505,
-        lng: -0.09,
+        lat: 53.1424,
+        lng: -6.266155,
  },
  UserslocationFound: false,
-   zoom: 12,
+   zoom: 6,
+
    /* Monitors the state of the users inputs (detects changes). */
    UsersSession: {
      event: '',
@@ -66,7 +78,10 @@ class App extends Component {
      dtend: ''
    },
    Sessions: [],
-   Members: []
+   Members: [],
+
+   sendingMessage: false,
+   sentMessage: false
  }
 componentDidMount() {
   //Grabs the markers from the Thesession API to be displayed.
@@ -113,6 +128,7 @@ componentDidMount() {
           });
       });
 });
+
 }
 
 formSubmitted = (event) => {
@@ -129,6 +145,9 @@ formSubmitted = (event) => {
   //importing Joi to get the result through validation of the inputs with the schema.
   const result = Joi.validate(UsersSession, schema);
   if(!result.error) {
+    this.setState({
+      sendingMessage: true
+    })
 //fetching against API_URL
     fetch(API_URL, {
       method: 'POST',
@@ -144,6 +163,12 @@ formSubmitted = (event) => {
     }).then(res => res.json())
     .then(Sessions => {
       console.log(Sessions)
+      setTimeout(() => {
+      this.setState({
+        sendingMessage: false,
+        sentMessage: true
+      });
+    }, 4000);
     });
   }
 }
@@ -160,6 +185,10 @@ valueChanged = (event) => {
      }
    }))
 }
+
+
+
+
 //Sharing of code between React components
   render() {
      const position = [this.state.location.lat, this.state.location.lng]
@@ -189,8 +218,7 @@ valueChanged = (event) => {
               <em>{UsersSession.event}, </em>
                   {UsersSession.venue} {'\n'}
 
-                  <Button color="primary" size="sm">More info</Button>
-                  <Chart/>
+                   <PopupModal initialModalState={true}/>
               </Popup>
            </Marker>
          ))}
@@ -203,59 +231,69 @@ valueChanged = (event) => {
               <em>{Users.name}, </em>
                   {Users.bio} {'\n'}
 
-                  <Button color="primary" size="sm">More info</Button>
+                  <PopupModal initialModalState={true}/>
               </Popup>
            </Marker>
          ))}
+
+
+       <Search/>
        </Map>
        <Card body className="message-form">
-        <CardTitle>Welcome to TradMap!</CardTitle>
+       <CardTitle>Welcome to TradMap!</CardTitle>
         <CardText>Please input the details of your Session below.</CardText>
-        <Form onSubmit={this.formSubmitted}>
-       <FormGroup>
-         <Label for="name">Session Title</Label>
-         <Input
-         /*when the state changes */
-           onChange={this.valueChanged}
-           type="text"
-           name="event"
-           id="event"
-           placeholder="..." />
 
-           <Label for="startDate">Start Date</Label>
+        { !this.state.sendingMessage && !this.state.sentMessage ?
+          <Form onSubmit={this.formSubmitted}>
+         <FormGroup>
+           <Label for="name">Session Title</Label>
            <Input
+           /*when the state changes */
              onChange={this.valueChanged}
-             type="date"
-             name="dtstart"
-             id="dtstart" />
+             type="text"
+             name="event"
+             id="event"
+             placeholder="..." />
 
-          <Label for="EndDate"> End Date </Label>
+             <Label for="startDate">Start Date</Label>
              <Input
                onChange={this.valueChanged}
                type="date"
-               name="dtend"
-               id="dtend" />
+               name="dtstart"
+               id="dtstart" />
 
-               <Label for="venue">Session Venue</Label>
+            <Label for="EndDate"> End Date </Label>
                <Input
                  onChange={this.valueChanged}
-                 type="textarea"
-                 name="venue"
-                 id="venue"
-                 placeholder="..." />
+                 type="date"
+                 name="dtend"
+                 id="dtend" />
 
-               <Label for="Address">Session Address</Label>
-               <Input
-                 onChange={this.valueChanged}
-                 type="textarea"
-                 name="address"
-                 id="address"
-                 placeholder="..." />
-      </FormGroup>
+                 <Label for="venue">Session Venue</Label>
+                 <Input
+                   onChange={this.valueChanged}
+                   type="textarea"
+                   name="venue"
+                   id="venue"
+                   placeholder="..." />
 
-       <Button type ="submit" color="info" disabled={!this.state.UserslocationFound}>submit</Button>
-       </Form>
-      </Card>
+                 <Label for="Address">Session Address</Label>
+                 <Input
+                   onChange={this.valueChanged}
+                   type="textarea"
+                   name="address"
+                   id="address"
+                   placeholder="..." />
+        </FormGroup>
+
+         <Button type ="submit" color="success" disabled={!this.state.UserslocationFound}>submit</Button>
+         </Form>
+          :
+          this.state.sendingMessage || !this.state.UserslocationFound ?
+         <img src="loading.gif"></img> :
+       <CardText>Thanks for submitting a Session! </CardText>
+        }
+       </Card>
       </div>
     );
   }

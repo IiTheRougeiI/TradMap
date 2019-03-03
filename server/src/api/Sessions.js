@@ -25,29 +25,6 @@ router.get('/', (req, res) => {
       res.json(allSessions);
     });
 });
-//POST for when no errors are produced.
-router.post('/', (req, res, next) => {
-  const result = Joi.validate(req.body, schema);
-  if (result.error == null) {
-//Removes the need to write eg) req.body.name below.
-    const { event, venue, address, latitude, longitude, dtstart, dtend,} = req.body;
-    const Session = {
-      event,
-      venue,
-      address,
-      dtstart,
-      dtend,
-      latitude,
-      longitude,
-      date: new Date()
-     };
-   Sessions.insert(Session).then(insertedMessage => {
-         res.json(insertedMessage);
-   });
- }
-else {
-  next(result.error);
-   }
-});
+
 
 module.exports = router;

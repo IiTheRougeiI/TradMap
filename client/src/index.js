@@ -3,6 +3,13 @@ import ReactDOM from 'react-dom';
 
 import 'leaflet/dist/leaflet.css';
 import 'bootstrap/dist/css/bootstrap.css';
+import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css";
+
+
+import "leaflet/dist/leaflet.js";
+import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder.js";
+
+
 
 import './index.css';
 import App from './App';
