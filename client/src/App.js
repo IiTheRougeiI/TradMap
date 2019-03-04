@@ -5,12 +5,13 @@ import Joi from 'joi';
 //import only modules needed or error.
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Card, CardTitle, CardText,Modal,ModalBody,ModalFooter,ModalHeader } from 'reactstrap';
-import {Form, FormGroup, Label, Input } from 'reactstrap';
+import {Form, FormGroup, Label, Input, Dropdown } from 'reactstrap';
 import * as ELG from 'esri-leaflet-geocoder';
 import { Button } from 'reactstrap';
 import Chart from './components/Chart';
 import Search from './components/Search';
 import PopupModal from './components/Modal';
+import Ddown from './components/Dropdown';
 
 
 
@@ -31,6 +32,13 @@ var myIcon1 = L.icon({
 
 var myIcon2 = L.icon({
     iconUrl: 'https://static.thenounproject.com/png/852208-200.png',
+    iconSize: [25, 51],
+    iconAnchor: [12.5, 51],
+    popupAnchor: [0, -51],
+});
+
+var myIcon3 = L.icon({
+    iconUrl: 'http://www.libpng.org/pub/png/img_png/pengbrew_160x160.png',
     iconSize: [25, 51],
     iconAnchor: [12.5, 51],
     popupAnchor: [0, -51],
@@ -79,6 +87,7 @@ class App extends Component {
    },
    Sessions: [],
    Members: [],
+   Nearbymems: [],
 
    sendingMessage: false,
    sentMessage: false
@@ -100,6 +109,15 @@ componentDidMount() {
             Members
           });
         });
+
+        fetch('https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50')
+          .then(res => res.json())
+          .then(members => {
+            console.log(members);
+            this.setState({
+              Nearbymems : members.name
+            });
+          });
 
   /*Asks user for location via google alert. */
   navigator.geolocation.getCurrentPosition((position) => {
@@ -191,6 +209,7 @@ valueChanged = (event) => {
 
 //Sharing of code between React components
   render() {
+
      const position = [this.state.location.lat, this.state.location.lng]
     return (
       <div className ="map">
@@ -223,6 +242,20 @@ valueChanged = (event) => {
            </Marker>
          ))}
 
+         {this.state.Nearbymems.map(memberz => (
+           <Marker
+                   position={[memberz.location.latitude, memberz.location.longitude]}
+                   icon={myIcon3} >
+              <Popup>
+              <em>{memberz.name}, </em>
+                  {memberz.bio} {'\n'}
+
+                   <PopupModal initialModalState={true}/>
+              </Popup>
+           </Marker>
+         ))}
+
+
          {this.state.Members.map(Users => (
            <Marker
                    position={[Users.latitude, Users.longitude]}
@@ -241,12 +274,13 @@ valueChanged = (event) => {
        </Map>
        <Card body className="message-form">
        <CardTitle>Welcome to TradMap!</CardTitle>
-        <CardText>Please input the details of your Session below.</CardText>
+        <CardText>Please input the details of your event below.</CardText>
 
         { !this.state.sendingMessage && !this.state.sentMessage ?
           <Form onSubmit={this.formSubmitted}>
          <FormGroup>
-           <Label for="name">Session Title</Label>
+           <Ddown color="success"/>
+           <Label for="name">Title</Label>
            <Input
            /*when the state changes */
              onChange={this.valueChanged}
@@ -269,7 +303,7 @@ valueChanged = (event) => {
                  name="dtend"
                  id="dtend" />
 
-                 <Label for="venue">Session Venue</Label>
+                 <Label for="venue">Venue</Label>
                  <Input
                    onChange={this.valueChanged}
                    type="textarea"
@@ -277,7 +311,7 @@ valueChanged = (event) => {
                    id="venue"
                    placeholder="..." />
 
-                 <Label for="Address">Session Address</Label>
+                 <Label for="Address">Address</Label>
                  <Input
                    onChange={this.valueChanged}
                    type="textarea"
