@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import 'leaflet/dist/leaflet.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css";
+import 'react-leaflet-markercluster/dist/styles.min.css';
 
 
 import "leaflet/dist/leaflet.js";

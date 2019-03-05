@@ -3,7 +3,7 @@ import './App.css';
 import L from 'leaflet';
 import Joi from 'joi';
 //import only modules needed or error.
-import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
+import { Map, TileLayer, Marker, Popup,  MapLayer, withLeaflet  } from 'react-leaflet';
 import { Card, CardTitle, CardText,Modal,ModalBody,ModalFooter,ModalHeader } from 'reactstrap';
 import {Form, FormGroup, Label, Input, Dropdown } from 'reactstrap';
 import * as ELG from 'esri-leaflet-geocoder';
@@ -12,13 +12,13 @@ import Chart from './components/Chart';
 import Search from './components/Search';
 import PopupModal from './components/Modal';
 import Ddown from './components/Dropdown';
-
+import MarkerClusterGroup from './components/Cluster';
 
 
 var myIcon = L.icon({
-    iconUrl: 'http://pngimg.com/uploads/harp/harp_PNG26.png',
-    iconSize: [20, 51],
-    iconAnchor: [12.5, 51],
+    iconUrl: 'https://cdn1.iconfinder.com/data/icons/twitter-ui-colored/48/JD-21-256.png',
+    iconSize: [60, 80],
+    iconAnchor: [30, 40],
     popupAnchor: [0, -51],
     draggable: true,
 });
@@ -87,7 +87,7 @@ class App extends Component {
    },
    Sessions: [],
    Members: [],
-   Nearbymems: [],
+   nearbymems: [],
 
    sendingMessage: false,
    sentMessage: false
@@ -110,14 +110,14 @@ componentDidMount() {
           });
         });
 
-        fetch('https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50')
+    /*    fetch('https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50')
           .then(res => res.json())
           .then(members => {
             console.log(members);
             this.setState({
-              Nearbymems : members.name
+              nearbymems: members.members
             });
-          });
+          }); */
 
   /*Asks user for location via google alert. */
   navigator.geolocation.getCurrentPosition((position) => {
@@ -213,7 +213,7 @@ valueChanged = (event) => {
      const position = [this.state.location.lat, this.state.location.lng]
     return (
       <div className ="map">
-      <Map className ="map" center={position} zoom={this.state.zoom}>
+      <Map className ="map" center={position} zoom={this.state.zoom} maxZoom ={28}>
       /* tile imported to use over leafletjs*/
          <TileLayer
            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -242,20 +242,20 @@ valueChanged = (event) => {
            </Marker>
          ))}
 
-         {this.state.Nearbymems.map(memberz => (
+      /*   {this.state.nearbymems.map(members => (
            <Marker
-                   position={[memberz.location.latitude, memberz.location.longitude]}
+                   position={[members.latitude, members.longitude]}
                    icon={myIcon3} >
               <Popup>
-              <em>{memberz.name}, </em>
-                  {memberz.bio} {'\n'}
+              <em>{members.name}, </em>
+                  {members.bio} {'\n'}
 
                    <PopupModal initialModalState={true}/>
               </Popup>
            </Marker>
-         ))}
+         ))} */
 
-
+         <MarkerClusterGroup>
          {this.state.Members.map(Users => (
            <Marker
                    position={[Users.latitude, Users.longitude]}
@@ -268,6 +268,7 @@ valueChanged = (event) => {
               </Popup>
            </Marker>
          ))}
+            </MarkerClusterGroup>
 
 
        <Search/>

@@ -23,7 +23,7 @@ class PopupModal extends React.Component {
       <div>
         <Button color="primary" onClick={this.toggle}>More Info</Button>
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-          <ModalHeader toggle={this.toggle}>Modal title</ModalHeader>
+          <ModalHeader toggle={this.toggle}>More Information</ModalHeader>
           <ModalBody>
           <Chart/>
           </ModalBody>
