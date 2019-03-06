@@ -10,7 +10,6 @@ class Search extends MapControl {
   }
 
   componentDidMount() {
-    console.log(searchControl);
     const { map } = this.props.leaflet;
     const searchControl = this.leafletElement;
 

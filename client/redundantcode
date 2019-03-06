@@ -1,0 +1,43 @@
+/*  fetch('https://ipapi.co/json')
+      .then(res => res.json())
+      .then(location => {
+          console.log(location);
+          this.setState({
+            location: {
+              lat:  location.latitude,
+              lng: location.longitude
+            },
+            UserslocationFound: true,
+            zoom: 15
+          });
+      }); */
+
+
+
+/*   <MarkerClusterGroup>
+   {this.state.Members.map(Users => (
+     <Marker
+             position={[Users.latitude, Users.longitude]}
+             icon={myIcon1} >
+        <Popup style={{display: 'inline-block'}}>
+        <em>{Users.name}, </em>
+            {Users.bio} {'\n'}
+
+            <PopupModal initialModalState={true}/>
+        </Popup>
+     </Marker>
+   ))}
+      </MarkerClusterGroup> */
+
+      /*   {this.state.Sessions.map(UsersSession => (
+           <Marker
+                   position={[UsersSession.latitude, UsersSession.longitude]}
+                   icon={myIcon} >
+              <Popup>
+              <em>{UsersSession.event}, </em>
+                  {UsersSession.venue} {'\n'}
+
+                   <PopupModal initialModalState={true}/>
+              </Popup>
+           </Marker>
+         ))}*/

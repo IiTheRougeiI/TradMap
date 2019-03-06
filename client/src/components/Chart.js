@@ -1,10 +1,14 @@
 import React, {Component} from 'react';
-import {Bar, Line, Pie} from 'react-chartjs-2';
+import {Bar} from 'react-chartjs-2';
 
 class Chart extends Component {
+
+
   constructor(props){
     super(props);
     this.state= {
+      poptunes : [],
+
       chartData:{
         labels: ['Jigs', 'Reels', 'Sean Nos', 'Hornpipe', 'N/A', 'Techno'],
       datasets:[
@@ -31,6 +35,18 @@ class Chart extends Component {
       ]
     }
  }
+}
+
+componentDidMount() {
+
+  fetch('https://thesession.org/tunes/popular?format=json&perpage=50')
+  .then(res => res.json())
+  .then(tunes => {
+    console.log(tunes);
+    this.setState({
+      poptunes: tunes.tunes
+    });
+  });
 }
 
   render(){

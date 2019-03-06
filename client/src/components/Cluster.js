@@ -2,6 +2,7 @@ import { MapLayer, withLeaflet } from "react-leaflet";
 import L from "leaflet";
 
 require("leaflet.markercluster");
+require('leaflet.markercluster.freezable');
 
 class MarkerClusterGroup extends MapLayer {
 
@@ -11,6 +12,7 @@ class MarkerClusterGroup extends MapLayer {
       ...props.leaflet,
       layerContainer: el
     };
+    //el.freezeAtZoom(1);
     return el;
   }
 

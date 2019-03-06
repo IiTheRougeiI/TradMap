@@ -17,31 +17,40 @@ import MarkerClusterGroup from './components/Cluster';
 
 var myIcon = L.icon({
     iconUrl: 'https://cdn1.iconfinder.com/data/icons/twitter-ui-colored/48/JD-21-256.png',
-    iconSize: [60, 80],
-    iconAnchor: [30, 40],
+    iconSize: [25, 51],
+    iconAnchor: [12.5, 25.5],
     popupAnchor: [0, -51],
     draggable: true,
 });
 
 var myIcon1 = L.icon({
     iconUrl: 'members.png',
-    iconSize: [25, 51],
-    iconAnchor: [12.5, 51],
-    popupAnchor: [0, -51],
+    iconSize: [25, 44],
+    iconAnchor: [12.5, 44],
+    popupAnchor: [0, -44],
 });
 
+https://img.icons8.com/doodle/48/000000/marker.png
+
 var myIcon2 = L.icon({
-    iconUrl: 'https://static.thenounproject.com/png/852208-200.png',
-    iconSize: [25, 51],
-    iconAnchor: [12.5, 51],
-    popupAnchor: [0, -51],
+    iconUrl: 'sessions.png',
+    iconSize: [25, 44],
+    iconAnchor: [22, 44],
+    popupAnchor: [0, -44],
 });
 
 var myIcon3 = L.icon({
-    iconUrl: 'http://www.libpng.org/pub/png/img_png/pengbrew_160x160.png',
-    iconSize: [25, 51],
-    iconAnchor: [12.5, 51],
-    popupAnchor: [0, -51],
+    iconUrl: 'http://www.clker.com/cliparts/E/L/C/f/4/B/google-maps-icon-blank-hi.png',
+    iconSize: [25, 44],
+    iconAnchor: [22, 44],
+    popupAnchor: [0, -44],
+});
+
+var myIcon4 = L.icon({
+    iconUrl: 'https://img.icons8.com/doodle/48/000000/marker.png',
+    iconSize: [25, 44],
+    iconAnchor: [22, 44],
+    popupAnchor: [0, -44],
 });
 
 //Joi creates the schema for validation
@@ -88,6 +97,9 @@ class App extends Component {
    Sessions: [],
    Members: [],
    nearbymems: [],
+   items: [],
+   newSessions: [],
+   newEvents: [],
 
    sendingMessage: false,
    sentMessage: false
@@ -110,14 +122,52 @@ componentDidMount() {
           });
         });
 
-    /*    fetch('https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50')
+
+     fetch('https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50&page=1')
           .then(res => res.json())
           .then(members => {
             console.log(members);
             this.setState({
               nearbymems: members.members
             });
-          }); */
+          });
+
+          fetch('https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50&page=2')
+               .then(res => res.json())
+               .then(members => {
+                 console.log(members);
+                 this.setState({
+                   nearbymems: members.members
+                 });
+               });
+
+               fetch('https://thesession.org/sessions/new?format=json&perpage=50')
+                    .then(res => res.json())
+                    .then(sessions => {
+                      console.log(sessions);
+                      this.setState({
+                        newSessions: sessions.sessions
+                      });
+                    });
+
+                    fetch('https://thesession.org/events/new?format=json&perpage=50')
+                         .then(res => res.json())
+                         .then(events => {
+                           console.log(events);
+                           this.setState({
+                             newEvents: events.events
+                           });
+                         });
+
+          //To be used for the activity stream of thesession.
+               fetch('https://thesession.org/activity?format=json')
+               .then(res => res.json())
+               .then(items => {
+                 console.log(items);
+                 this.setState({
+                   items: items.items
+                 });
+               });
 
   /*Asks user for location via google alert. */
   navigator.geolocation.getCurrentPosition((position) => {
@@ -132,7 +182,7 @@ componentDidMount() {
     });
   }, () => {
     console.log("Location not given :(");
-    fetch('https://ipapi.co/json')
+/*  fetch('https://ipapi.co/json')
       .then(res => res.json())
       .then(location => {
           console.log(location);
@@ -144,7 +194,7 @@ componentDidMount() {
             UserslocationFound: true,
             zoom: 15
           });
-      });
+      }); */
 });
 
 }
@@ -241,10 +291,10 @@ valueChanged = (event) => {
               </Popup>
            </Marker>
          ))}
-
-      /*   {this.state.nearbymems.map(members => (
+      <MarkerClusterGroup>
+      {this.state.nearbymems.map(members => (
            <Marker
-                   position={[members.latitude, members.longitude]}
+                   position={[members.location.latitude, members.location.longitude]}
                    icon={myIcon3} >
               <Popup>
               <em>{members.name}, </em>
@@ -253,22 +303,42 @@ valueChanged = (event) => {
                    <PopupModal initialModalState={true}/>
               </Popup>
            </Marker>
-         ))} */
-
-         <MarkerClusterGroup>
-         {this.state.Members.map(Users => (
-           <Marker
-                   position={[Users.latitude, Users.longitude]}
-                   icon={myIcon1} >
-              <Popup style={{display: 'inline-block'}}>
-              <em>{Users.name}, </em>
-                  {Users.bio} {'\n'}
-
-                  <PopupModal initialModalState={true}/>
-              </Popup>
-           </Marker>
          ))}
-            </MarkerClusterGroup>
+        </MarkerClusterGroup>
+
+        <MarkerClusterGroup>
+        {this.state.newSessions.map(sessions => (
+             <Marker
+                     position={[sessions.latitude, sessions.longitude]}
+                     icon={myIcon2} >
+                <Popup>
+                <em>Hosted by {sessions.member.name}, </em>
+                    {sessions.venue.name} {'\n'}
+
+                     <PopupModal initialModalState={true}/>
+                </Popup>
+             </Marker>
+           ))}
+           </MarkerClusterGroup>
+
+           <MarkerClusterGroup>
+           {this.state.newEvents.map(events => (
+                <Marker
+                        position={[events.latitude, events.longitude]}
+                        icon={myIcon4} >
+                   <Popup>
+                   <em>{events.name} </em>
+                   {events.venue.name}
+                    {events.dtstart} {'\n'}
+                     {events.dtend}
+                     Hosted by {events.member.name}.
+
+                        <PopupModal initialModalState={true}/>
+                   </Popup>
+                </Marker>
+              ))}
+              </MarkerClusterGroup>
+
 
 
        <Search/>
@@ -327,6 +397,7 @@ valueChanged = (event) => {
           this.state.sendingMessage || !this.state.UserslocationFound ?
          <img src="loading.gif"></img> :
        <CardText>Thanks for submitting a Session! </CardText>
+
         }
        </Card>
       </div>
