@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Bar} from 'react-chartjs-2';
+import {Bar,Radar} from 'react-chartjs-2';
 
 class Chart extends Component {
 
@@ -10,25 +10,19 @@ class Chart extends Component {
       poptunes : [],
 
       chartData:{
-        labels: ['Jigs', 'Reels', 'Sean Nos', 'Hornpipe', 'N/A', 'Techno'],
+        labels: ['The Kesh', 'The Butterfly', 'Morrisons', 'Out on the Ocean', 'The Connaughtmans Rambles', 'The Blarney Pilgrim'],
       datasets:[
         {
-          label:'Music Types',
+          label:'Most Popular Jigs (Per TuneBook)',
           data:[
-            617594,
-            181045,
-            153060,
-            106519,
-            105162,
-            95072
+            4887,
+            4199,
+            3773,
+            2674,
+            2336,
+            2144
           ],
           backgroundColor:[
-            'rgba(255, 99, 132, 0.6)',
-            'rgba(54, 162, 235, 0.6)',
-            'rgba(255, 206, 86, 0.6)',
-            'rgba(75, 192, 192, 0.6)',
-            'rgba(153, 102, 255, 0.6)',
-            'rgba(255, 159, 64, 0.6)',
             'rgba(255, 99, 132, 0.6)'
           ]
         }
@@ -37,7 +31,7 @@ class Chart extends Component {
  }
 }
 
-componentDidMount() {
+/* componentDidMount() {
 
   fetch('https://thesession.org/tunes/popular?format=json&perpage=50')
   .then(res => res.json())
@@ -47,12 +41,12 @@ componentDidMount() {
       poptunes: tunes.tunes
     });
   });
-}
+} */
 
   render(){
     return (
       <div className="chart">
-      <Bar
+      <Radar
         data={this.state.chartData}
         options={{
           maintainAspectRatio: false

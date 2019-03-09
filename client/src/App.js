@@ -16,21 +16,19 @@ import MarkerClusterGroup from './components/Cluster';
 
 
 var myIcon = L.icon({
-    iconUrl: 'https://cdn1.iconfinder.com/data/icons/twitter-ui-colored/48/JD-21-256.png',
-    iconSize: [25, 51],
-    iconAnchor: [12.5, 25.5],
-    popupAnchor: [0, -51],
+    iconUrl: 'user.png',
+    iconSize: [25, 40],
+    iconAnchor: [12.5, 20],
+    popupAnchor: [0, -40],
     draggable: true,
 });
 
 var myIcon1 = L.icon({
     iconUrl: 'members.png',
-    iconSize: [25, 44],
-    iconAnchor: [12.5, 44],
-    popupAnchor: [0, -44],
+    iconSize: [25, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -40],
 });
-
-https://img.icons8.com/doodle/48/000000/marker.png
 
 var myIcon2 = L.icon({
     iconUrl: 'sessions.png',
@@ -75,7 +73,7 @@ const schema1 = Joi.object().keys({
 
 //URL declaration, if hostname is localhost, request backend. otherwise URL.
 const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api/v1/Sessions' : 'https://api.tradmap.live/api/v1/Sessions';
-const API_URL1 = window.location.hostname === 'localhost' ? 'http://localhost:5000/api/v1/Members' : 'https://api.tradmap.live/api/v1/Members';
+//const API_URL1 = window.location.hostname === 'localhost' ? 'http://localhost:5000/api/v1/Members' : 'https://api.tradmap.live/api/v1/Members';
 
 class App extends Component {
   state = {
@@ -100,13 +98,14 @@ class App extends Component {
    items: [],
    newSessions: [],
    newEvents: [],
+   poptunes: [],
 
    sendingMessage: false,
    sentMessage: false
  }
 componentDidMount() {
   //Grabs the markers from the Thesession API to be displayed.
-  fetch(API_URL)
+  /* fetch(API_URL)
      .then(res => res.json())
      .then(Sessions => {
        this.setState({
@@ -120,8 +119,23 @@ componentDidMount() {
           this.setState({
             Members
           });
-        });
+        });  */
 
+/* const urls= ['https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50&page=2',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50&page=3',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50&page=4' ];
+
+Promise.all(urls.map(url =>
+      fetch(url)
+      .then(res => res.json())
+         ))
+         .then(members => {
+
+           console.log(members);
+           this.setState({
+             nearbymems: members.members
+           });
+         }); */
 
      fetch('https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50&page=1')
           .then(res => res.json())
@@ -132,19 +146,14 @@ componentDidMount() {
             });
           });
 
-          fetch('https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50&page=2')
-               .then(res => res.json())
-               .then(members => {
-                 console.log(members);
-                 this.setState({
-                   nearbymems: members.members
-                 });
-               });
+
+
+
+
 
                fetch('https://thesession.org/sessions/new?format=json&perpage=50')
                     .then(res => res.json())
                     .then(sessions => {
-                      console.log(sessions);
                       this.setState({
                         newSessions: sessions.sessions
                       });
@@ -153,7 +162,6 @@ componentDidMount() {
                     fetch('https://thesession.org/events/new?format=json&perpage=50')
                          .then(res => res.json())
                          .then(events => {
-                           console.log(events);
                            this.setState({
                              newEvents: events.events
                            });
@@ -163,11 +171,19 @@ componentDidMount() {
                fetch('https://thesession.org/activity?format=json')
                .then(res => res.json())
                .then(items => {
-                 console.log(items);
                  this.setState({
                    items: items.items
                  });
                });
+
+               fetch('https://thesession.org/tunes/popular?format=json&perpage=50')
+               .then(res => res.json())
+               .then(tunes => {
+                 this.setState({
+                   poptunes: tunes.tunes
+                 });
+               });
+
 
   /*Asks user for location via google alert. */
   navigator.geolocation.getCurrentPosition((position) => {
@@ -256,7 +272,6 @@ valueChanged = (event) => {
 
 
 
-
 //Sharing of code between React components
   render() {
 
@@ -264,13 +279,11 @@ valueChanged = (event) => {
     return (
       <div className ="map">
       <Map className ="map" center={position} zoom={this.state.zoom} maxZoom ={28}>
-      /* tile imported to use over leafletjs*/
          <TileLayer
            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
          />
 
-         /* displays marker for when users location is given/found */
          { this.state.UserslocationFound ?
 
          <Marker
@@ -295,10 +308,10 @@ valueChanged = (event) => {
       {this.state.nearbymems.map(members => (
            <Marker
                    position={[members.location.latitude, members.location.longitude]}
-                   icon={myIcon3} >
+                   icon={myIcon1} >
               <Popup>
-              <em>{members.name}, </em>
-                  {members.bio} {'\n'}
+              <h1 className="lead">{members.name} </h1>
+
 
                    <PopupModal initialModalState={true}/>
               </Popup>
@@ -312,9 +325,10 @@ valueChanged = (event) => {
                      position={[sessions.latitude, sessions.longitude]}
                      icon={myIcon2} >
                 <Popup>
-                <em>Hosted by {sessions.member.name}, </em>
-                    {sessions.venue.name} {'\n'}
 
+                  <em>  <p className="lead">Session lead by {sessions.member.name}</p>
+                     <hr className="my-2" />
+                        {sessions.venue.name}{'\n'} </em>
                      <PopupModal initialModalState={true}/>
                 </Popup>
              </Marker>
@@ -327,13 +341,13 @@ valueChanged = (event) => {
                         position={[events.latitude, events.longitude]}
                         icon={myIcon4} >
                    <Popup>
-                   <em>{events.name} </em>
-                   {events.venue.name}
-                    {events.dtstart} {'\n'}
-                     {events.dtend}
-                     Hosted by {events.member.name}.
+                   <em><p className="lead">{events.name} </p> {'\n'}
+                   {events.venue.name} {'\n'}
+                   <hr className="my-2" />
+                     Hosted by {events.member.name}. </em>
+                     {''}
 
-                        <PopupModal initialModalState={true}/>
+                        <PopupModal initialModalState={true} />
                    </Popup>
                 </Marker>
               ))}

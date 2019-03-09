@@ -48,3 +48,7 @@ body {
 video {
   width: 100%;
 }
+
+em {
+  /*white-space: pre-wrap; */
+}
