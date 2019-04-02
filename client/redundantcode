@@ -41,3 +41,62 @@
               </Popup>
            </Marker>
          ))}*/
+
+
+         <Card body className="message-form">
+         <CardTitle>Welcome to TradMap!</CardTitle>
+          <CardText>Please input the details of your event below.</CardText>
+
+          { !this.state.sendingMessage && !this.state.sentMessage ?
+            <Form onSubmit={this.formSubmitted}>
+           <FormGroup>
+             <Ddown color="success"/>
+             <Label for="name">Title</Label>
+             <Input
+             /*when the state changes */
+               onChange={this.valueChanged}
+               type="text"
+               name="event"
+               id="event"
+               placeholder="..." />
+
+               <Label for="startDate">Start Date</Label>
+               <Input
+                 onChange={this.valueChanged}
+                 type="date"
+                 name="dtstart"
+                 id="dtstart" />
+
+              <Label for="EndDate"> End Date </Label>
+                 <Input
+                   onChange={this.valueChanged}
+                   type="date"
+                   name="dtend"
+                   id="dtend" />
+
+                   <Label for="venue">Venue</Label>
+                   <Input
+                     onChange={this.valueChanged}
+                     type="textarea"
+                     name="venue"
+                     id="venue"
+                     placeholder="..." />
+
+                   <Label for="Address">Address</Label>
+                   <Input
+                     onChange={this.valueChanged}
+                     type="textarea"
+                     name="address"
+                     id="address"
+                     placeholder="..." />
+          </FormGroup>
+
+           <Button type ="submit" color="success" disabled={!this.state.UserslocationFound}>submit</Button>
+           </Form>
+            :
+            this.state.sendingMessage || !this.state.UserslocationFound ?
+           <img src="loading.gif"></img> :
+         <CardText>Thanks for submitting a Session! </CardText>
+
+          }
+         </Card>

@@ -3,22 +3,50 @@ import './App.css';
 import L from 'leaflet';
 import Joi from 'joi';
 //import only modules needed or error.
-import { Map, TileLayer, Marker, Popup,  MapLayer, withLeaflet  } from 'react-leaflet';
-import { Card, CardTitle, CardText,Modal,ModalBody,ModalFooter,ModalHeader } from 'reactstrap';
+import { Map, TileLayer, Marker, Popup,  MapLayer, withLeaflet, LayerGroup  } from 'react-leaflet';
+import { Card, CardTitle, CardText,CardImg,Modal,ModalBody,ModalFooter,ModalHeader,} from 'reactstrap';
 import {Form, FormGroup, Label, Input, Dropdown } from 'reactstrap';
 import * as ELG from 'esri-leaflet-geocoder';
 import { Button } from 'reactstrap';
 import Chart from './components/Chart';
 import Search from './components/Search';
-import PopupModal from './components/Modal';
+import UsersModal from './components/UsersModal';
+import EventModal from './components/EventModal';
+import SeshModal from './components/SeshModal';
 import Ddown from './components/Dropdown';
 import MarkerClusterGroup from './components/Cluster';
+//import LocateControl from './components/LocateControl';
+
+const createClusterCustomIcon = function (cluster) {
+  return L.divIcon({
+    html: `<span>${cluster.getChildCount()}</span>`,
+    className: 'marker-cluster-custom',
+    iconSize: L.point(40, 40, true),
+  });
+};
+
+const createClusterCustomIcon1 = function (cluster) {
+  return L.divIcon({
+    html: `<span>${cluster.getChildCount()}</span>`,
+    className: 'marker-cluster-custom1',
+    iconSize: L.point(40, 40, true),
+  });
+};
+
+const createClusterCustomIcon2 = function (cluster) {
+  return L.divIcon({
+    html: `<span>${cluster.getChildCount()}</span>`,
+    className: 'marker-cluster-custom2',
+    iconSize: L.point(40, 40, true),
+  });
+};
+
 
 
 var myIcon = L.icon({
     iconUrl: 'user.png',
     iconSize: [25, 40],
-    iconAnchor: [12.5, 20],
+    iconAnchor: [20, 40],
     popupAnchor: [0, -40],
     draggable: true,
 });
@@ -50,6 +78,8 @@ var myIcon4 = L.icon({
     iconAnchor: [22, 44],
     popupAnchor: [0, -44],
 });
+
+
 
 //Joi creates the schema for validation
 const schema = Joi.object().keys({
@@ -103,9 +133,11 @@ class App extends Component {
    sendingMessage: false,
    sentMessage: false
  }
+
+
 componentDidMount() {
   //Grabs the markers from the Thesession API to be displayed.
-  /* fetch(API_URL)
+  fetch(API_URL)
      .then(res => res.json())
      .then(Sessions => {
        this.setState({
@@ -113,6 +145,7 @@ componentDidMount() {
        });
      });
 
+/*
      fetch(API_URL1)
         .then(res => res.json())
         .then(Members => {
@@ -121,68 +154,90 @@ componentDidMount() {
           });
         });  */
 
-/* const urls= ['https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50&page=2',
-'https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50&page=3',
-'https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50&page=4' ];
+        fetch('https://thesession.org/sessions/new?format=json&perpage=50')
+             .then(res => res.json())
+             .then(sessions => {
+               this.setState({
+                 newSessions: sessions.sessions
+               });
+             });
 
-Promise.all(urls.map(url =>
+             fetch('https://thesession.org/events/new?format=json&perpage=50')
+                  .then(res => res.json())
+                  .then(events => {
+                    this.setState({
+                      newEvents: events.events
+                    });
+                  });
+
+   //To be used for the activity stream of thesession.
+    /*    fetch('https://thesession.org/activity?format=json')
+        .then(res => res.json())
+        .then(items => {
+          this.setState({
+            items: items.items
+          });
+        }); */
+
+
+
+const urls= ['https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=1',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=2',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=3',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=4',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=5',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=6',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=7',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=8',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=9',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=10',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=11',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=12',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=13',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=14',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=15',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=16',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=17',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=18',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=19',
+'https://thesession.org/members/nearby?latlon=53,-6&radius=8000&format=json&perpage=50&page=20' ];
+
+/* Promise.all(urls.map(url =>
       fetch(url)
       .then(res => res.json())
          ))
          .then(members => {
-
            console.log(members);
            this.setState({
-             nearbymems: members.members
+             nearbymems: members
            });
-         }); */
-
-     fetch('https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50&page=1')
+         });
+  */
+    /*  fetch('https://thesession.org/members/nearby?latlon=53,-6&radius=1000&format=json&perpage=50&page=1')
           .then(res => res.json())
           .then(members => {
             console.log(members);
             this.setState({
               nearbymems: members.members
             });
-          });
+          }); */
+
+          //threading ??
+
+          Promise.all(
+            urls.map(url =>
+              fetch(url)
+                .then(res => res.json())
+                .then(res => res.members)
+            )
+          ).then(members => {
+            this.setState({
+              nearbymems: [].concat(...members)
+            });
+        });
 
 
 
-
-
-
-               fetch('https://thesession.org/sessions/new?format=json&perpage=50')
-                    .then(res => res.json())
-                    .then(sessions => {
-                      this.setState({
-                        newSessions: sessions.sessions
-                      });
-                    });
-
-                    fetch('https://thesession.org/events/new?format=json&perpage=50')
-                         .then(res => res.json())
-                         .then(events => {
-                           this.setState({
-                             newEvents: events.events
-                           });
-                         });
-
-          //To be used for the activity stream of thesession.
-               fetch('https://thesession.org/activity?format=json')
-               .then(res => res.json())
-               .then(items => {
-                 this.setState({
-                   items: items.items
-                 });
-               });
-
-               fetch('https://thesession.org/tunes/popular?format=json&perpage=50')
-               .then(res => res.json())
-               .then(tunes => {
-                 this.setState({
-                   poptunes: tunes.tunes
-                 });
-               });
 
 
   /*Asks user for location via google alert. */
@@ -275,10 +330,18 @@ valueChanged = (event) => {
 //Sharing of code between React components
   render() {
 
+     /* const locateOptions = {
+      position: 'topright',
+      strings: {
+          title: 'Show me where I am, yo!'
+      },
+      onActivate: () => {} // callback before engine starts retrieving locations
+  } */
+
      const position = [this.state.location.lat, this.state.location.lng]
     return (
       <div className ="map">
-      <Map className ="map" center={position} zoom={this.state.zoom} maxZoom ={28}>
+      <Map className ="map" center={position} zoom={this.state.zoom} maxZoom ={30}>
          <TileLayer
            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -300,26 +363,29 @@ valueChanged = (event) => {
               <em>{UsersSession.event}, </em>
                   {UsersSession.venue} {'\n'}
 
-                   <PopupModal initialModalState={true}/>
+                   <EventModal initialModalState={true}/>
               </Popup>
            </Marker>
          ))}
-      <MarkerClusterGroup>
+      <MarkerClusterGroup
+      iconCreateFunction={createClusterCustomIcon}
+      >
       {this.state.nearbymems.map(members => (
            <Marker
                    position={[members.location.latitude, members.location.longitude]}
                    icon={myIcon1} >
               <Popup>
               <h1 className="lead">{members.name} </h1>
-
-
-                   <PopupModal initialModalState={true}/>
+              <hr className="my-2" />
+              <p>{members.bio} </p>
               </Popup>
            </Marker>
          ))}
         </MarkerClusterGroup>
 
-        <MarkerClusterGroup>
+        <MarkerClusterGroup
+        iconCreateFunction={createClusterCustomIcon1}
+        >
         {this.state.newSessions.map(sessions => (
              <Marker
                      position={[sessions.latitude, sessions.longitude]}
@@ -329,25 +395,29 @@ valueChanged = (event) => {
                   <em>  <p className="lead">Session lead by {sessions.member.name}</p>
                      <hr className="my-2" />
                         {sessions.venue.name}{'\n'} </em>
-                     <PopupModal initialModalState={true}/>
+                     <SeshModal initialModalState={true}/>
                 </Popup>
              </Marker>
            ))}
            </MarkerClusterGroup>
 
-           <MarkerClusterGroup>
+           <MarkerClusterGroup
+            iconCreateFunction={createClusterCustomIcon2}
+           >
            {this.state.newEvents.map(events => (
                 <Marker
                         position={[events.latitude, events.longitude]}
                         icon={myIcon4} >
                    <Popup>
-                   <em><p className="lead">{events.name} </p> {'\n'}
-                   {events.venue.name} {'\n'}
+                   <em><h1 fluid className="lead">{events.name} </h1> {'\n'}
+                   <p> Venue: {events.venue.name}</p> {'\n'}
+                   <p fluid className="lead">Event start: {events.dtstart} </p> {'\n'}
+                   <p fluid className="lead">Event end:   {events.dtend}   </p> {'\n'}
                    <hr className="my-2" />
                      Hosted by {events.member.name}. </em>
                      {''}
 
-                        <PopupModal initialModalState={true} />
+                        <EventModal initialModalState={true} />
                    </Popup>
                 </Marker>
               ))}
@@ -355,8 +425,11 @@ valueChanged = (event) => {
 
 
 
+
+
        <Search/>
        </Map>
+
        <Card body className="message-form">
        <CardTitle>Welcome to TradMap!</CardTitle>
         <CardText>Please input the details of your event below.</CardText>
@@ -414,6 +487,28 @@ valueChanged = (event) => {
 
         }
        </Card>
+       
+
+        <Card body className="legend">
+        <em>
+        <img  height="30vw" width="20vw" src='user.png' />
+        : User icon
+        </em>
+        <em>
+        <img  height="30vw" width="20vw" src='members.png' />
+         : Member icon
+        </em>
+        <em>
+        <img  height="30vw" width="20vw" src='sessions.png' />
+         : Session icon
+        </em>
+        <em>
+        <img  height="30vw" width="20vw" src='https://img.icons8.com/doodle/48/000000/marker.png' />
+         : Event icon
+         </em>
+        </Card>
+
+
       </div>
     );
   }

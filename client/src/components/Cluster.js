@@ -12,6 +12,7 @@ class MarkerClusterGroup extends MapLayer {
       ...props.leaflet,
       layerContainer: el
     };
+    //el.maxClusterRadius(40);
     //el.freezeAtZoom(1);
     return el;
   }

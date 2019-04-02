@@ -28,6 +28,27 @@ class Chart extends Component {
         }
       ]
     }
+
+/*  barData:{
+      labels: ['Drowsy Maggie','Cooleys','The Silver Spear','The Maid Behind the Bar','THe Banshee','The Wind that Shakes the barley'],
+    datasets:[
+      {
+        label:'Most Popular Reels (Per TuneBook)',
+        data:[
+          5368,
+          4217,
+          3249,
+          3123,
+          2987,
+          2672
+        ],
+        backgroundColor:[
+          'rgba(255, 99, 132, 0.6)'
+        ]
+      }
+    ]
+  } */
+
  }
 }
 

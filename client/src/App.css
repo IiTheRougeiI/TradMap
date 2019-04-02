@@ -45,10 +45,57 @@ body {
   width: 20%;
 }
 
+.legend {
+  z-index: 999;
+  position: absolute;
+  bottom: 1%;
+  left: 1%;
+  display: inline-flex;
+}
+
 video {
   width: 100%;
 }
 
 em {
   /*white-space: pre-wrap; */
+}
+
+.marker-cluster-custom {
+  background: #1E62F5;
+  border: 2px solid #ededed;
+  border-radius: 50%;
+  color: #ededed;
+  height: 40px;
+  line-height: 37px;
+  text-align: center;
+  width: 40px;
+  opacity: 20;
+  z-index: 999;
+}
+
+.marker-cluster-custom1 {
+  background: #F80404;
+  border: 2px solid #ededed;
+  border-radius: 50%;
+  color: #ededed;
+  height: 40px;
+  line-height: 37px;
+  text-align: center;
+  width: 40px;
+  opacity: 20;
+  z-index: 999;
+}
+
+.marker-cluster-custom2 {
+  background: #3AB40C;
+  border: 2px solid #ededed;
+  border-radius: 50%;
+  color: #ededed;
+  height: 40px;
+  line-height: 37px;
+  text-align: center;
+  width: 40px;
+  opacity: 20;
+  z-index: 999;
 }
